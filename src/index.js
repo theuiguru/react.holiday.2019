@@ -5,7 +5,7 @@ import "./styles.css";
 
 const collection = [
   {name: "Robin"},
-  {name: "Christian"},
+  {name: "Cristin"},
   {name: "Shajan"},
   {name: "Noel"}
 ];
@@ -16,12 +16,13 @@ function Friends({ name, ...props }) {
 
 function App() {
   let [index, setIndex] = React.useState(0);
+  let friend = collection[index];
   return (
     <div>
       <button type="button" onClick={() => setIndex(index + 1)}>
         Next
       </button>
-      <Friends name={collection[index].name} />
+      {friend ? <Friends name={friend.name}/> : <div>No friend for index {index}</div>}
     </div>
   );
 }
