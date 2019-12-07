@@ -4,25 +4,42 @@ import ReactDOM from "react-dom";
 import "./styles.css";
 
 const collection = [
-  {name: "Robin"},
-  {name: "Cristin"},
-  {name: "Shajan"},
-  {name: "Noel"}
+  { name: "Bulbasaur" },
+  { name: "Ivysaur" },
+  { name: "Venusaur" }
 ];
 
-function Friends({ name, ...props }) {
+function Pokemon({ name, ...props }) {
   return <h2 {...props}>{name}</h2>;
+}
+
+async function fetchPokemon(id = "") {
+  let res = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
+  if (res.ok) {
+    return await res.json();
+  } else {
+    return Promise.reject();
+  }
 }
 
 function App() {
   let [index, setIndex] = React.useState(0);
-  let friend = collection[index];
+  let pokemon = collection[index];
+
+  React.useEffect(() => {
+    fetchPokemon(index).then(json => console.log(json));
+  });
+
   return (
     <div>
       <button type="button" onClick={() => setIndex(index + 1)}>
         Next
       </button>
-      {friend ? <Friends name={friend.name}/> : <div>No friend for index {index}</div>}
+      {pokemon ? (
+        <Pokemon name={pokemon.name} />
+      ) : (
+        <div>No friend for index {index}</div>
+      )}
     </div>
   );
 }
