@@ -24,10 +24,10 @@ async function fetchPokemon(id = "") {
 
 function App() {
   let [index, setIndex] = React.useState(0);
-  let pokemon = collection[index];
+  let [pokemon, setPokemon] = React.useState(null);
 
   React.useEffect(() => {
-    fetchPokemon(index).then(json => console.log(json));
+    fetchPokemon(index).then(json => setPokemon(json));
   });
 
   return (
@@ -38,7 +38,7 @@ function App() {
       {pokemon ? (
         <Pokemon name={pokemon.name} />
       ) : (
-        <div>No friend for index {index}</div>
+        <div>No pokemon for index {index}</div>
       )}
     </div>
   );
