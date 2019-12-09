@@ -22,13 +22,19 @@ async function fetchPokemon(id = "") {
   }
 }
 
-function App() {
-  let [index, setIndex] = React.useState(0);
+function usePokemon(index) {
   let [pokemon, setPokemon] = React.useState(null);
 
   React.useEffect(() => {
     fetchPokemon(index).then(json => setPokemon(json));
   });
+
+  return pokemon;
+}
+
+function App() {
+  let [index, setIndex] = React.useState(0);
+  let pokemon = usePokemon(index);
 
   return (
     <div>
