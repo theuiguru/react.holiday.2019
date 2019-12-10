@@ -3,23 +3,19 @@ import ReactDOM from "react-dom";
 
 import "./styles.css";
 
-const collection = [
-  { name: "Bulbasaur" },
-  { name: "Ivysaur" },
-  { name: "Venusaur" }
-];
-
-function Pokemon({ name, ...props }) {
-  return <h2 {...props}>{name}</h2>;
-}
-
 async function fetchPokemon(id = "") {
   let res = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
   if (res.ok) {
-    return await res.json();
+    let json = await res.json();
+    console.log(json);
+    return json;
   } else {
     return Promise.reject();
   }
+}
+
+function Pokemon({ name, ...props }) {
+  return <h2 {...props}>{name}</h2>;
 }
 
 function usePokemon(index) {
@@ -27,13 +23,13 @@ function usePokemon(index) {
 
   React.useEffect(() => {
     fetchPokemon(index).then(json => setPokemon(json));
-  });
+  }, [index]);
 
   return pokemon;
 }
 
 function App() {
-  let [index, setIndex] = React.useState(0);
+  let [index, setIndex] = React.useState(1);
   let pokemon = usePokemon(index);
 
   return (
