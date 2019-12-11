@@ -31,6 +31,7 @@ function usePokemon(index) {
 function App() {
   let [index, setIndex] = React.useState(1);
   let pokemon = usePokemon(index);
+  let collection = usePokemon("");
 
   return (
     <div>
@@ -41,6 +42,16 @@ function App() {
         <Pokemon name={pokemon.name} />
       ) : (
         <div>No pokemon for index {index}</div>
+      )}
+
+      {collection ? (
+        <ul>
+          {collection.results.map(pokemon => (
+            <li key={pokemon.name}>{pokemon.name}</li>
+          ))}
+        </ul>
+      ) : (
+        <div>Fetching pokemon...</div>
       )}
     </div>
   );
