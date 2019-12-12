@@ -45,15 +45,21 @@ function App() {
       )}
 
       {collection ? (
-        <ul>
-          {collection.results.map(pokemon => (
-            <li key={pokemon.name}>{pokemon.name}</li>
-          ))}
-        </ul>
+        <PokemonList as="ol" items={collection.results} />
       ) : (
         <div>Fetching pokemon...</div>
       )}
     </div>
+  );
+}
+
+function PokemonList({ as: As, items, ...props }) {
+  return (
+    <As {...props}>
+      {items.map(pokemon => (
+        <li key={pokemon.name}>{pokemon.name}</li>
+      ))}
+    </As>
   );
 }
 
