@@ -53,7 +53,7 @@ function App() {
   );
 }
 
-function PokemonList({ as: As, items, ...props }) {
+function PokemonList({ as: As = React.Fragment, items, ...props }) {
   return (
     <As {...props}>
       {items.map(pokemon => (
