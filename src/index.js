@@ -3,11 +3,19 @@ import ReactDOM from "react-dom";
 
 import "./styles.css";
 
+function PokemonList({
+  as: As = React.Fragment,
+  items,
+  renderItem = pokemon => <li key={pokemon.name}>{pokemon.name}</li>,
+  ...props
+}) {
+  return <As>{items.map(renderItem)}</As>;
+}
+
 async function fetchPokemon(id = "") {
   let res = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
   if (res.ok) {
     let json = await res.json();
-    console.log(json);
     return json;
   } else {
     return Promise.reject();
@@ -45,21 +53,15 @@ function App() {
       )}
 
       {collection ? (
-        <PokemonList as="ol" items={collection.results} />
+        <PokemonList
+          as="div"
+          items={collection.results}
+          renderItem={pokemon => <button type="button">{pokemon.name}</button>}
+        />
       ) : (
         <div>Fetching pokemon...</div>
       )}
     </div>
-  );
-}
-
-function PokemonList({ as: As = React.Fragment, items, ...props }) {
-  return (
-    <As {...props}>
-      {items.map(pokemon => (
-        <li key={pokemon.name}>{pokemon.name}</li>
-      ))}
-    </As>
   );
 }
 
