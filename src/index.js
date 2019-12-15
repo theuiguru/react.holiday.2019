@@ -4,11 +4,13 @@ import ReactDOM from "react-dom";
 import "./styles.css";
 
 function PokemonList({
-  as: As = React.Fragment,
-  items,
   renderItem = pokemon => <li key={pokemon.name}>{pokemon.name}</li>,
   ...props
 }) {
+  return <List {...props} renderItem={renderItem} />;
+}
+
+function List({ as: As = React.Fragment, items, renderItem, ...props }) {
   return <As>{items.map(renderItem)}</As>;
 }
 
