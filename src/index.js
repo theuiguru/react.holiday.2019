@@ -5,9 +5,16 @@ import "./styles.css";
 
 function PokemonList({
   renderItem = pokemon => <li key={pokemon.name}>{pokemon.name}</li>,
+  className,
   ...props
 }) {
-  return <List {...props} renderItem={renderItem} />;
+  return (
+    <List
+      className={["PokemonList", className].join(" ")}
+      {...props}
+      renderItem={renderItem}
+    />
+  );
 }
 
 function List({ as: As = React.Fragment, items, renderItem, ...props }) {
@@ -57,6 +64,7 @@ function App() {
       {collection ? (
         <PokemonList
           as="div"
+          className="some-additional-classname"
           items={collection.results}
           renderItem={pokemon => <button type="button">{pokemon.name}</button>}
         />
