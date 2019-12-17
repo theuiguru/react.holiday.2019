@@ -3,22 +3,29 @@ import ReactDOM from "react-dom";
 
 import "./styles.css";
 
-function PokemonList({
-  renderItem = pokemon => <li key={pokemon.name}>{pokemon.name}</li>,
-  className,
-  ...props
-}) {
+function PokemonList({ className = "", ...props }) {
   return (
-    <List
-      className={["PokemonList", className].join(" ")}
-      {...props}
-      renderItem={renderItem}
-    />
+    <List className={["PokemonList", className].join(" ").trim()} {...props} />
   );
 }
 
-function List({ as: As = React.Fragment, items, renderItem, ...props }) {
+function List({
+  as: As = React.Fragment,
+  items,
+  renderItem = pokemon => <li key={pokemon.name} />,
+  ...props
+}) {
   return <As>{items.map(renderItem)}</As>;
+}
+
+async function getJson(url) {
+  let res = await fetch(url);
+  if (res.ok) {
+    let json = await res.json();
+    return json;
+  } else {
+    return Promise.reject();
+  }
 }
 
 async function fetchPokemon(id = "") {
@@ -46,27 +53,36 @@ function usePokemon(index) {
 }
 
 function App() {
-  let [index, setIndex] = React.useState(1);
-  let pokemon = usePokemon(index);
+  let [pokemon, setPokemon] = React.useReducer(
+    (oldState, newState) => newState,
+    null
+  );
   let collection = usePokemon("");
 
   return (
     <div>
-      <button type="button" onClick={() => setIndex(index + 1)}>
-        Next
-      </button>
       {pokemon ? (
         <Pokemon name={pokemon.name} />
       ) : (
-        <div>No pokemon for index {index}</div>
+        <div>Select a Pokemon...</div>
       )}
 
       {collection ? (
         <PokemonList
           as="div"
-          className="some-additional-classname"
           items={collection.results}
-          renderItem={pokemon => <button type="button">{pokemon.name}</button>}
+          renderItem={pokemon => (
+            <div key={pokemon.name}>
+              <button
+                type="button"
+                onClick={() =>
+                  getJson(pokemon.url).then(json => setPokemon(json))
+                }
+              >
+                {pokemon.name}
+              </button>
+            </div>
+          )}
         />
       ) : (
         <div>Fetching pokemon...</div>
