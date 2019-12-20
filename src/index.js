@@ -55,6 +55,12 @@ function usePokemon(index) {
 function App() {
   let [{ pokemon, ...state }, dispatch] = React.useReducer(
     (state, action) => {
+      if (action.type === "fetch_and_replace_pokemon") {
+        getJson(action.payload).then(json =>
+          dispatch({ type: "replace_pokemon", payload: json })
+        );
+        return state;
+      }
       if (action.type === "replace_pokemon")
         return { ...state, pokemon: action.payload };
       throw new Error();
@@ -80,9 +86,10 @@ function App() {
               <button
                 type="button"
                 onClick={() =>
-                  getJson(pokemon.url).then(json =>
-                    dispatch({ type: "replace_pokemon", payload: json })
-                  )
+                  dispatch({
+                    type: "fetch_and_replace_pokemon",
+                    payload: pokemon.url
+                  })
                 }
               >
                 {pokemon.name}
