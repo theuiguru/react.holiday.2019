@@ -3,6 +3,8 @@ import ReactDOM from "react-dom";
 
 import "./styles.css";
 
+let PokemonContext = React.createContext({ name: "bulbasaur" });
+
 function PokemonList({ className = "", ...props }) {
   return (
     <List className={["PokemonList", className].join(" ").trim()} {...props} />
@@ -38,7 +40,8 @@ async function fetchPokemon(id = "") {
   }
 }
 
-function Pokemon({ name, ...props }) {
+function Pokemon({ ...props }) {
+  let { name } = React.useContext(PokemonContext);
   return <h2 {...props}>{name}</h2>;
 }
 
@@ -71,11 +74,7 @@ function App() {
 
   return (
     <div>
-      {pokemon ? (
-        <Pokemon name={pokemon.name} />
-      ) : (
-        <div>Select a Pokemon...</div>
-      )}
+      {pokemon ? <Pokemon /> : <div>Select a Pokemon...</div>}
 
       {collection ? (
         <PokemonList
