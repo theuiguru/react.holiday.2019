@@ -41,7 +41,12 @@ async function fetchPokemon(id = "") {
 }
 
 function Pokemon({ ...props }) {
-  let { name } = React.useContext(PokemonContext);
+  let [
+    {
+      pokemon: { name }
+    },
+    dispatch
+  ] = React.useContext(PokemonContext);
   return <h2 {...props}>{name}</h2>;
 }
 
@@ -56,7 +61,7 @@ function usePokemon(index) {
 }
 
 function App() {
-  let [{ pokemon, ...state }, dispatch] = React.useReducer(
+  let stateReducer = React.useReducer(
     (state, action) => {
       if (action.type === "fetch_and_replace_pokemon") {
         getJson(action.payload).then(json =>
@@ -70,11 +75,20 @@ function App() {
     },
     { pokemon: null }
   );
+
+  let [{ pokemon }, dispatch] = stateReducer;
+
   let collection = usePokemon("");
 
   return (
     <div>
-      {pokemon ? <PokemonContext.Provider value={pokemon}><Pokemon /></PokemonContext.Provider> : <div>Select a Pokemon...</div>}
+      {pokemon ? (
+        <PokemonContext.Provider value={stateReducer}>
+          <Pokemon />
+        </PokemonContext.Provider>
+      ) : (
+        <div>Select a Pokemon...</div>
+      )}
 
       {collection ? (
         <PokemonList
