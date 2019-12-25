@@ -1,64 +1,12 @@
 import React from "react";
 import ReactDOM from "react-dom";
-
+import PokemonContext from "./pokemon-context";
 import "./styles.css";
 
-let PokemonContext = React.createContext({ name: "bulbasaur" });
+const Pokemon = React.lazy(() => import("./pokemon-detail"));
 
-function PokemonList({ className = "", ...props }) {
-  return (
-    <List className={["PokemonList", className].join(" ").trim()} {...props} />
-  );
-}
-
-function List({
-  as: As = React.Fragment,
-  items,
-  renderItem = pokemon => <li key={pokemon.name} />,
-  ...props
-}) {
-  return <As>{items.map(renderItem)}</As>;
-}
-
-async function getJson(url) {
-  let res = await fetch(url);
-  if (res.ok) {
-    let json = await res.json();
-    return json;
-  } else {
-    return Promise.reject();
-  }
-}
-
-async function fetchPokemon(id = "") {
-  let res = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
-  if (res.ok) {
-    let json = await res.json();
-    return json;
-  } else {
-    return Promise.reject();
-  }
-}
-
-function Pokemon({ ...props }) {
-  let [
-    {
-      pokemon: { name }
-    },
-    dispatch
-  ] = React.useContext(PokemonContext);
-  return <h2 {...props}>{name}</h2>;
-}
-
-function usePokemon(index) {
-  let [pokemon, setPokemon] = React.useState(null);
-
-  React.useEffect(() => {
-    fetchPokemon(index).then(json => setPokemon(json));
-  }, [index]);
-
-  return pokemon;
-}
+// Assignment:s
+// Import `Pokemon` from `PokemonDetail` using React's code-splitting features: React.lazy() and Suspense
 
 function App() {
   let stateReducer = React.useReducer(
@@ -69,9 +17,10 @@ function App() {
         );
         return state;
       }
-      if (action.type === "replace_pokemon")
+      if (action.type === "replace_pokemon") {
         return { ...state, pokemon: action.payload };
-      throw new Error(`${action.type} is not a known action.`);
+      }
+      throw new Error();
     },
     { pokemon: null }
   );
@@ -84,7 +33,9 @@ function App() {
     <div>
       {pokemon ? (
         <PokemonContext.Provider value={stateReducer}>
-          <Pokemon />
+          <React.Suspense fallback={<div>Couldn't Catch Pokemon...</div>}>
+            <Pokemon />
+          </React.Suspense>
         </PokemonContext.Provider>
       ) : (
         <div>Select a Pokemon...</div>
@@ -100,7 +51,7 @@ function App() {
                 type="button"
                 onClick={() =>
                   dispatch({
-                    type: "bad_action",
+                    type: "fetch_and_replace_pokemon",
                     payload: pokemon.url
                   })
                 }
@@ -115,6 +66,16 @@ function App() {
       )}
     </div>
   );
+}
+
+function usePokemon(index) {
+  let [pokemon, setPokemon] = React.useState(null);
+
+  React.useEffect(() => {
+    fetchPokemon(index).then(json => setPokemon(json));
+  }, [index]);
+
+  return pokemon;
 }
 
 class ErrorBoundary extends React.Component {
@@ -140,6 +101,41 @@ class ErrorBoundary extends React.Component {
     }
 
     return this.props.children;
+  }
+}
+
+function PokemonList({ className = "", ...props }) {
+  return (
+    <List className={["PokemonList", className].join(" ").trim()} {...props} />
+  );
+}
+
+function List({
+  as: As = React.Fragment,
+  items,
+  renderItem = pokemon => <li key={pokemon.name}>{pokemon.name}</li>,
+  ...props
+}) {
+  return <As {...props}>{items.map(renderItem)}</As>;
+}
+
+async function getJson(url) {
+  let res = await fetch(url);
+  if (res.ok) {
+    let json = await res.json();
+    return json;
+  } else {
+    return Promise.reject();
+  }
+}
+
+async function fetchPokemon(id = "") {
+  let res = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
+  if (res.ok) {
+    let json = await res.json();
+    return json;
+  } else {
+    return Promise.reject();
   }
 }
 
