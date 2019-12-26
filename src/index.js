@@ -5,9 +5,6 @@ import "./styles.css";
 
 const Pokemon = React.lazy(() => import("./pokemon-detail"));
 
-// Assignment:s
-// Import `Pokemon` from `PokemonDetail` using React's code-splitting features: React.lazy() and Suspense
-
 function App() {
   let stateReducer = React.useReducer(
     (state, action) => {
